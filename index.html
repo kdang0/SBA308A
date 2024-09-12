@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script type="module" src="./js/index.js" defer></script>
+    <script type="module" src="./js/calculation.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=SUSE:wght@100..800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <h1><span id="poke">Poké</span>DLE</h1>
+    <div id="formContainer">
+      <form id="pokeForm" action="submit">
+        <input type="text" name="entry" />
+        <button type="submit">enter</button>
+      </form>
+    </div>
+    <div id="guessContainer">
+      <div id="categories">
+        <div id="generation" class="categoryContainer">
+          <p class="title">generation</p>
+        </div>
+        <div id="evolution" class="categoryContainer">
+          <p class="title">evolution stage</p>
+        </div>
+        <div id="type" class="categoryContainer">
+          <p class="title">type(s)</p>
+        </div>
+        <div id="weight" class="categoryContainer">
+          <p class="title">weight</p>
+        </div>
+        <div id="height" class="categoryContainer">
+          <p class="title">height</p>
+        </div>
+        <div id="color" class="categoryContainer">
+          <p class="title">color</p>
+        </div>
+      </div>
+      
+      <!-- <img class="pokeImage" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png" alt="ditto"> -->
+    </div>
+  </body>
+</html>
