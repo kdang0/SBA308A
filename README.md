@@ -1,5 +1,5 @@
 # PokeDLE
-* Inspired by wordle
+* Inspired by wordle and all data is from PokeAPI https://pokeapi.co/
 * Guess the pokemon based on generation, evolution stage, type, color, weight, height
 * 🟩 correct 🟨 partial 🟥 incorrect
 ![image](https://github.com/user-attachments/assets/8fd64378-2577-4bce-ad09-91593cb640cd)
