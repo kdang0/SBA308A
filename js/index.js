@@ -9,22 +9,57 @@ import { createPanelItem, createSprite, createText } from "./panel.js";
 
 const form = document.getElementById("pokeForm");
 const entry = form.elements["entry"];
-const replay = document.getElementById("replayButton");
 export const pokeSpeciesUrl = `https://pokeapi.co/api/v2/pokemon-species`;
 export const pokeEvolUrl = `https://pokeapi.co/api/v2/evolution-chain`;
 export const pokeUrl = `https://pokeapi.co/api/v2/pokemon`;
 
+//generates pokemon information based on given ID
 export const generatePokemon = async (id) => {
   const promise1 = isNaN(id)
     ? await axios.get(convertToURL(id))
     : await axios.get(pokeSpeciesUrl + `/${id}`);
-  const promise2 = await axios.get(promise1.data.evolution_chain.url);
+  const promise2 = await axios
+    .get(promise1.data.evolution_chain.url)
+    //error handling through axios
+    .catch(function (error) {
+      if (error.response) {
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      } else if (error.request) {
+        console.log(error.request);
+      } else {
+        console.log("Error", error.message);
+      }
+      console.log(error.config);
+    });
   const promise3 = isNaN(id)
-    ? await axios.get(pokeUrl + `/${promise1.data.id}`)
-    : await axios.get(pokeUrl + `/${id}`);
+    ? await axios.get(pokeUrl + `/${promise1.data.id}`).catch(function (error) {
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          console.log(error.request);
+        } else {
+          console.log("Error", error.message);
+        }
+        console.log(error.config);
+      })
+    : await axios.get(pokeUrl + `/${id}`).catch(function (error) {
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          console.log(error.request);
+        } else {
+          console.log("Error", error.message);
+        }
+        console.log(error.config);
+      });
   const pokemon = Promise.all([promise2, promise3]).then(
     ([evolChain, physical]) => {
-      // console.log(evolChain.data);
       let current = evolChain.data.chain.evolves_to;
       let counter = 1;
       const typeArr = [];
@@ -56,20 +91,43 @@ export const generatePokemon = async (id) => {
   // console.log(pokemon);
   return pokemon;
 };
+
 //generates random pokemon
 const generateRandPokemon = async () => {
-  const res = await axios.get(pokeSpeciesUrl);
+  const res = await axios.get(pokeSpeciesUrl).catch(function (error) {
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      console.log(error.request);
+    } else {
+      console.log("Error", error.message);
+    }
+    console.log(error.config);
+  });
   const totalCount = res.data.count;
-  // console.log(totalCount);
   const pokeId = generateRandNum(1, totalCount);
-  // console.log(pokeId);
   const pokemon = await generatePokemon(pokeId);
   return pokemon;
 };
 
 //grabs pokemon names database
 const getPokemonDB = async () => {
-  const res = await axios.get(pokeSpeciesUrl + `?offset=0&limit=1025`);
+  const res = await axios
+    .get(pokeSpeciesUrl + `?offset=0&limit=1025`)
+    .catch(function (error) {
+      if (error.response) {
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      } else if (error.request) {
+        console.log(error.request);
+      } else {
+        console.log("Error", error.message);
+      }
+      console.log(error.config);
+    });
   const data = res.data;
   console.log(data.results);
   return data.results;
@@ -79,21 +137,19 @@ const rand_pokemon = await generateRandPokemon();
 console.log(rand_pokemon);
 
 export const pokeDB = await getPokemonDB();
-// console.log(`POKEMON DICTIONARY: ${pokeDB}`);
 
+//upon submitting guess, will check if the guess is correct
+//if not will check which categories are correct
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const res = await validateQuery(entry.value);
   console.log(res);
 
   if (res) {
-    console.log("TRUEING");
     const result = await isCorrect(entry.value, rand_pokemon);
-    
-    const body = document.querySelector('body');
-    const randNum = Math.floor(
-      Math.random() * (Math.floor(500) - Math.ceil(1)) + Math.ceil(1)
-    );
+
+    const body = document.querySelector("body");
+    const randNum = generateRandNum(1, 500);
     createPanelItem(
       "generation",
       result.generation.value,
@@ -127,35 +183,40 @@ form.addEventListener("submit", async (e) => {
     var tl2 = gsap.timeline();
     tl.fromTo(boxes, { opacity: 0 }, { opacity: 1, stagger: 0.5 });
 
+    //if the guessed pokemon has the same name as the randomly generated pokemon then load up the winning screen
     const isSameName = result.name === rand_pokemon.name;
-    console.log(`RESULT: ` + isSameName);
     if (isSameName) {
-      console.log("CREATING SPRITE");
       setTimeout(() => {
         createSprite(rand_pokemon.sprite);
         createText();
         const pokemon = document.querySelector(".pokeImage");
         const text = document.querySelector("#winner");
-        const button = document.querySelector('#replayButton');
-        body.classList.add('hidden');
-        tl.to(guessPanel, { opacity: 0, onComplete: () => {
-          guessPanel.remove();
-        }});
+        const button = document.querySelector("#replayButton");
+        body.classList.add("hidden");
+        tl.to(guessPanel, {
+          opacity: 0,
+          onComplete: () => {
+            guessPanel.remove();
+          },
+        });
         tl.to(pokemon, {
           opacity: 1,
           y: 600,
           ease: "bounce.out",
-          duration: 2
+          duration: 2,
         });
-        tl.fromTo(text, {scale:0}, {scale:1, ease: "bounce.out", duration:0.5}, ">");
-        tl.from(button, {scale:0, ease:"bounce.out"});
+        tl.fromTo(
+          text,
+          { scale: 0 },
+          { scale: 1, ease: "bounce.out", duration: 0.5 },
+          ">"
+        );
+        tl.from(button, { scale: 0, ease: "bounce.out" });
       }, 3000);
-        tl2.timeline()
+      tl2.timeline();
     }
   } else {
-    console.log("FALSING");
     window.alert("Not a valid pokemon");
   }
   entry.value = "";
 });
-
